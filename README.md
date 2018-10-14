@@ -1,14 +1,15 @@
 # Temporal named entity recognizer
 
 *MSiA 490: Text Analytics*   
-**Developer**: Luca Colombo   
+**Developer: Luca Colombo**  
 
 This program is a simple temporal named entity recognizer built using regular expressions. The program recognizes simple date expressions of two types:
 1. Fixed dates (including exact time if mentioned in the expression)
 2. American Federal Holidays
+
 It is not designed to capture dates relative to a particular day ("the day before yesterday"), dates relative to temporal focus (“3 days later”), absolute dates with imprecise reference (“in the beginning of the 80s”), relative dates with special forms (seasons), basic duration ("during 3 years"), duration as interval (“from February, 11 to October, 27”), relative duration (“for a year”) and temporal atom (“three days”).
 
-In order to run the program, do the following: 
+## Suggested steps to run the program 
 
 1. Clone the repository.
 2. (optional) Find an article you want to scan for dates and store it in the same directory.
