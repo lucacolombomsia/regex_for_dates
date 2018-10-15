@@ -30,124 +30,93 @@ holidays_list = ['New Year’s Day', 'Birthday of Martin Luther King, Jr.', 'Was
             'Thanksgiving Day', 'Christmas Day']
 holidays = '|'.join(holidays_list)
 
-   
 
-def match_dow(text, output):
-    #this picks up expressions of the type 'Monday' or 'late Monday afternoon'
+
+def define_regex_list():
+    '''Function to define all regular expressions of interest.
+
+    In this function we define all the regular expression that we want to use to scan
+    the input text and match dates and holidays.
+    The function will return a list of regular expressions, so that it is easy to loop
+    through all regex of interest.
+
+    Returns:
+        list: A list of regular expressions'''
+
+    #this regex picks up expressions of the type 'Monday' or 'late Monday afternoon'
     #to avoid double counting, we need to make sure we do not pick up expression if it would be
     #picked up by another function
     #we use negative lookahead to fix this issue
     #example: the function does not pick up expressions followed by a time like 'Wednesday, 2pm'
-    match = re.finditer(r'((early |late )?(%s)( afternoon| morning| evening| night)?(?!, (%s))(?!, (%s)(am|pm|a.m.|p.m.))(?! (%s)(am|pm|a.m.|p.m.)))' %(days, months, hours_nums, hours_nums), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    match_dow = r'((early |late )?(%s)( afternoon| morning| evening| night)?(?!, (%s))(?!, (%s)(am|pm|a.m.|p.m.))(?! (%s)(am|pm|a.m.|p.m.)))' %(days, months, hours_nums, hours_nums)
 
 
-def match_dow_the_dom(text, output):
-    #this picks up expressions of the type 'Monday the 1st' and 'Monday the 1'
-    match = re.finditer(r'((%s)( the (%s)(th|st|nd|rd)?))' %(days, days_nums), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    #this regex picks up expressions of the type 'Monday the 1st' and 'Monday the 1'
+    match_dow_the_dom = r'((%s)( the (%s)(th|st|nd|rd)?))' %(days, days_nums)
 
 
-def match_days_with_time(text, output):
-    #this picks up expressions of the type 'Tuesday, 8pm' or 'Monday 6 a.m.' or '11 pm EST'
+    #this regex picks up expressions of the type 'Tuesday, 8pm' or 'Monday 6 a.m.' or '11 pm EST'
     #we use negative lookbehind to avoid overlap with another regex defined below
     #this does not match anything that is preceded by ':'
     #if not, when we have 11:10 am, the regex would pick up '10 am'
-    match = re.finditer(r'((?<!\d:)((%s) )?((%s), )?(%s)( )?(am|pm|a.m.|p.m.)( EST| ET| CST| CT| PST| PT| MST| MT)?)' %(days, days, hours_nums), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    match_days_with_time = r'((?<!\d:)((%s) )?((%s), )?(%s)( )?(am|pm|a.m.|p.m.)( EST| ET| CST| CT| PST| PT| MST| MT)?)' %(days, days, hours_nums)
 
 
-def match_dates_slashes(text, output):
-    #this picks up expressions of the type '01/01/2017'
+    #this regex picks up expressions of the type '01/01/2017'
     #I have made a first attempt at matching only valid month numbers and days numbers
     #12/35/2017 would be discarded
     #however, 2/30/2017 would be matched, even if the 30th of Feb. does not exist
     #a further improvement of this regex would validate all dates
     #picking up only dates that can be successfully parsed would be one possible approach
     #I did not pursue this because beyond the scope of the assignment
-    match = re.finditer(r'((%s)/(%s)/\d{4})' %(months_nums,days_nums_2digits), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    match_dates_slashes = r'((%s)/(%s)/\d{4})' %(months_nums,days_nums_2digits)
 
 
-def match_month_day(text, output):
-    #this picks up expressions of the type 'August 24th, 2014' or 'Monday, September 3rd'
+    #this regex picks up expressions of the type 'August 24th, 2014' or 'Monday, September 3rd'
     #also picks up exact time in expressions like 'August 28, 2018 10:10 am ET'
-    match = re.finditer(r'(((%s), )?(%s) \d+(th|st|nd|rd)?(, \d{4})?( )?((%s))?(:\d+)?( )?(am|pm|a.m.|p.m.)?( EST| ET| CST| CT| PST| PT| MST| MT)?)' %(days, months,hours_nums), text)
-    for x in match:
-        output.append(x.group(0).strip())
-    return output
+    match_month_day = r'(((%s), )?(%s) \d+(th|st|nd|rd)?(, \d{4})?( )?((%s))?(:\d+)?( )?(am|pm|a.m.|p.m.)?( EST| ET| CST| CT| PST| PT| MST| MT)?)' %(days, months,hours_nums)
 
 
-def match_day_of_month(text, output):
-    #this picks up expressions of the type 'the 4th of July'
-    match = re.finditer(r'(the (%s)(th|st|nd|rd)? of (%s))' %(days_nums, months), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    #this regex picks up expressions of the type 'the 4th of July'
+    match_day_of_month = r'(the (%s)(th|st|nd|rd)? of (%s))' %(days_nums, months)
 
 
-def match_months(text, output):
-    #this picks up expressions of the type 'late January'
+    #this regex picks up expressions of the type 'late January'
     #need to watch out for double counting!!
     #use positive lookbehind and only match if expression preceded by 'in' or 'since'
-    match = re.finditer(r'(((?<=in )|(?<=since ))(late |early )?(%s))' % (months), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    match_months = r'(((?<=in )|(?<=since ))(late |early )?(%s))' % (months)
 
 
-def match_years(text, output):
-    #this picks up '2018' from expressions of the type 'in 2018' and 'in 2017 and 2018'
-    match = re.finditer(r'((?<=in )|(?<=the )|(?<=since )|(?<=in \d{4} and ))\d{4}', text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    #this regex picks up '2018' from expressions of the type 'in 2018' and 'in 2017 and 2018'
+    match_years = r'((?<=in )|(?<=the )|(?<=since )|(?<=in \d{4} and ))\d{4}'
 
 
-def match_hours(text, output):
-    #this picks up expressions of the type '4:50 pm'
+    #this regex picks up expressions of the type '4:50 pm'
     #need to make sure this does not double count hours that are part of a long
     #string that also contains a date
     #use negative lookbehind to stop double counting
-    match = re.finditer(r'((?<!\d )(%s):\d+( )?(am|pm|a.m.|p.m.)( EST| ET| CST| CT| PST| PT| MST| MT)?)' % (hours_nums), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    match_hours = r'((?<!\d )(%s):\d+( )?(am|pm|a.m.|p.m.)( EST| ET| CST| CT| PST| PT| MST| MT)?)' % (hours_nums)
 
 
-def match_holidays(text, output):
-    #this picks up holidays
+    #this regex picks up holidays
     #holidays are defined in the list at the top of this script
-    match = re.finditer(r'((%s))' %(holidays), text)
-    for x in match:
-        output.append(x.group(0))
-    return output
+    match_holidays = r'((%s))' %(holidays)
+
+    #add all regular expressions to a list and return it
+    regex_list = [match_dow, match_dow_the_dom, match_days_with_time,
+                    match_dates_slashes, match_month_day, match_day_of_month,
+                    match_months, match_years, match_hours, match_holidays]
+    return regex_list
 
 
-def match_all(text, output):
-    #this is a function that calls all previously defined regex matchers
-    #notice that all 'matching' functions take a list as input, add the expressions they
-    #matched to that list and then return the list
-    #the best way to use match_all is to give it an empty list in the 'output' parameter
-    #it will return the list with all matched strings from all the matching functions
-    output = match_dow(text, output)
-    output = match_dow_the_dom(text, output)
-    output = match_days_with_time(text, output)
-    output = match_dates_slashes(text, output)
-    output = match_month_day(text, output)
-    output = match_day_of_month(text, output)
-    output = match_months(text, output)
-    output = match_years(text, output)
-    output = match_hours(text, output)
-    output = match_holidays(text, output)
+def match_all(input_text):
+    #this function searches for strings in the input_text using all previously defined regex
+    #the function returns a list with all matched strings from all regular expressions
+    output = []
+    for regex in define_regex_list():
+        match = re.finditer(regex, input_text)
+        for x in match:
+            output.append(x.group(0).strip())
     return output
 
 
@@ -155,7 +124,7 @@ def compute_performance(labels, output_list, evaluation_file):
     #function to compute performance of the program using perfect match
     #it computes true positives, false positives and false negatives
     #it then uses TP, FP and FN to compute precision, recall and F1 score
-    #it then writes all this information in a file names as per the evaluation_file parameter
+    #it then writes in a file named according to the evaluation_file parameter
     TP = 0
     FP = 0
     FN = 0

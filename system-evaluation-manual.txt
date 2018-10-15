@@ -12,7 +12,8 @@ I then tested the program on input2.txt and did not match some expressions. I us
 I then repeated the same approach on input3.txt, input4.txt and input5.txt; new unmatched strings allowed me to make my regex more general, but initially worsened the performance on input files on which I had previously achieved 100% accuracy. 
 In the end, with this sequential approach, I was able to generalize my regular expressions enought to have 100% precision and recall on 5 different news articles.
 
-I used positive and negative lookahead and lookbehind to minimize overlap between different regular expressions. I also tried to develop as few regex as possible by using the '?' (optional symbol) as much as possible. I tried to use different regex only for pattern that clearly cannot overlap, like 'the 15th of July' and 'August 15'.
-All strings that are picked up by a regex are added to a list. The final output file is obtained by passing through the list and writing one string per row into an output file.
+I used positive and negative lookahead and lookbehind to minimize overlap between different regular expressions. I also tried to develop as few regex as possible by using the optionality mark ('?') as much as possible. I tried to use different regex only for patterns that clearly cannot overlap, like 'the 15th of July' and 'August 15'.
+I have hardcoded a few patterns, including day numbers and month numbers to provide a first level of date validation. A date like 01/35/2018 will not be matched by my program, as this is not a meaningful date. While this is not a fully developed date validation system (which would have been beyond the scope of this homework), it provides a first sanity check on dates.
 
-Sorting the output and the ground truth lists allowed me to easily compare output and ground truth during the development of the program. This proved to be extremely beneficial given the trial and error approach I opted for.
+All strings that are picked up by a regex are added to a list. The final output file is obtained by passing through the list and writing one string per row into an output file.
+Sorting the output and the ground truth lists allowed me to visually compare output and ground truth during the development of the program. This proved to be extremely beneficial given the trial and error approach I opted for.

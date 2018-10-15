@@ -13,21 +13,21 @@ It is not designed to capture dates relative to a particular day ("the day befor
 ## Repository structure
 This repository contains:
 * `matcher.py`: a Python script that contains the main program.
-* `support.py`: a Python script that contains a series of functions that are called by `matcher.py`; these functions also include functions that search for a series of regular expressions in the input text.
-* a series of flat files: these are the input file, the output file, the ground truth and the performance evaluation for the 5 articles I used to develop and test my program.
+* `support.py`: a Python script that contains a series of functions that are called by `matcher.py`; this is the script where the regular expressions to match dates and holidays are defined.
+* a series of flat files: these are the input files, the output files, the ground truth files and the performance evaluation files for the 5 articles I used to develop and test my program.
 
 
 ## Suggested steps to run the program 
 
 1. Clone the repository.
 2. (optional) Find an article you want to scan for dates and store it in the same directory.
-3. (optional) Manually create a text file with all the dates that the system should recognize; this will be the ground truth.
-4. Open `matcher.py`. The program is currently set up to run on the 5 news articles that are included in this repo. If you followed steps 2 and 3 and want to run the program on a new text, then update the `main()` function by adding a new line as follows
+3. (optional) Manually create a text file with all the dates and holidays that the system should recognize; this will be the ground truth. Store it in the same directory.
+4. Open `matcher.py`. The program is currently set up to run on the 5 news articles that are included in this repo. If you followed steps 2 and 3 and want to run the program on a new text file, then update the `main()` function by adding a new line as follows
 
     ```
     execute_system(input_file, output_file, ground_truth_file, evaluation_file)
     ```
-   where `input_file` is the file name of the file you created in point 2, `output_file` is the file name of the file where the matched dates will be store, `ground_truth_file` is the file name of the file you created in point 3 and `evaluation_file` is the file name of the file where the matching performance (using perfect match) will be stored.
+   where `input_file` is the file name of the file you created in point 2, `output_file` is the file name of the file where the matched dates and holidays will be stored, `ground_truth_file` is the file name of the file you created in point 3 and `evaluation_file` is the file name of the file where the matching performance (using perfect match) will be stored.
 
-5. Run `matcher.py` either from the command line (`python matcher.py`) or using an IDE (for example, Spyder).
+5. Run `matcher.py` either from the command line (`python matcher.py`) or using an IDE like Spyder.
 6. An output file and an evaluation file will be created with the names you specified in point 4.
