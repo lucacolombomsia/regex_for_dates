@@ -1,0 +1,18 @@
+The code automatically computes system performance using perfect match.
+Precision, recall and sensitivity are calculated using their formula. This is implemented in the compute_performance() function in the support.py script.
+Since the system performance files are overwritten every time the code is executed, I will store my comments here.
+
+I have tested my system on 5 different news articles.
+On all 5 of them I have obtained 100% precision and recall using exact match.
+Partial match metrics cannot, by definition, be worse than exact match metrics. Hence, I have obtained 100% precision and recall on all 5 articles also using partial match.
+
+The design of the program followed a trial and error approach.
+I started by matching with 100% precision and recall the expressions in the input.txt file.
+I then tested the program on input2.txt and did not match some expressions. I used the expressions that were not matched to make my regular expressions more general. Once I obtained 100% precision and recall on input2.txt, I rerun the system on input.txt and found that by editing regular expressions to match input2.txt I had worsened the performance on input.txt. I therefore continued improving the regular expressions until I obtained 100% precision and recall on both input files.
+I then repeated the same approach on input3.txt, input4.txt and input5.txt; new unmatched strings allowed me to make my regex more general, but initially worsened the performance on input files on which I had previously achieved 100% accuracy. 
+In the end, with this sequential approach, I was able to generalize my regular expressions enought to have 100% precision and recall on 5 different news articles.
+
+I used positive and negative lookahead and lookbehind to minimize overlap between different regular expressions. I also tried to develop as few regex as possible by using the '?' (optional symbol) as much as possible. I tried to use different regex only for pattern that clearly cannot overlap, like 'the 15th of July' and 'August 15'.
+All strings that are picked up by a regex are added to a list. The final output file is obtained by passing through the list and writing one string per row into an output file.
+
+Sorting the output and the ground truth lists allowed me to easily compare output and ground truth during the development of the program. This proved to be extremely beneficial given the trial and error approach I opted for.
